@@ -25,13 +25,11 @@ if [ -f "${dojo_identity}/.gitconfig" ]; then
   chown dojo:dojo  ${dojo_home}/.gitconfig
 fi
 
-# user might be logged into vault
-if [ -f "${dojo_identity}/.vault-token" ]; then
-  cp "${dojo_identity}/.vault-token" "${dojo_home}"
-  chown dojo:dojo  ${dojo_home}/.vault-token
-fi
-
-if [[ -d ${dojo_identity}/.aws ]]; then
-    cp -pr ${dojo_identity}/.aws ${dojo_home}/.aws
-    chown dojo:dojo -R ${dojo_home}/.aws
+# Copy over user's gcloud config (including auth creds) if exists
+# using rsync so as to be able to ignore the logs directory
+if [[ -d ${dojo_identity}/.config/gcloud ]]; then
+    mkdir -p ${dojo_home}/.config
+    #cp -pr ${dojo_identity}/.config/gcloud ${dojo_home}/.config/gcloud
+    rsync -av --exclude 'logs' ${dojo_identity}/.config/gcloud ${dojo_home}/.config
+    chown dojo:dojo -R ${dojo_home}/.config/gcloud 
 fi
